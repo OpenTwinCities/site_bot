@@ -1,9 +1,9 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import
+from site_bot_test_helper import SiteBotTestCase
 from Meetup.Client import MeetupClient
 import mock
 import requests_mock
-from site_bot_test_helper import SiteBotTestCase
 
 events_count = 0
 
