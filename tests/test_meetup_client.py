@@ -1,5 +1,7 @@
 # -*- coding: utf8 -*-
-from MeetupClient import MeetupClient
+from __future__ import absolute_import
+from Meetup.Client import MeetupClient
+import mock
 import requests_mock
 from site_bot_test_helper import SiteBotTestCase
 
@@ -16,10 +18,13 @@ class MeetupClientTest(SiteBotTestCase):
                          'https://api.meetup.com/test_group/events')
 
     @requests_mock.Mocker()
-    def test_events_pagination_completion(self, m):
+    def test_fetch_events_with_next(self, m):
+        # Meetup event series go on forever; we only care about what's in the
+        # near future. Only one request to the event endpoint should occur.
         fake_events = [self.fake_event() for x in range(50)]
 
         def events_callback(request, context):
+            # Mock pagination of the events, with Link header
             global events_count
             events_count += 1
             if 25 * events_count <= len(fake_events):
@@ -28,4 +33,38 @@ class MeetupClientTest(SiteBotTestCase):
             return fake_events[25*(events_count-1):25*events_count]
 
         m.get(self.subject.events_url, json=events_callback)
-        self.assertEqual(self.subject.events, fake_events)
+
+        events = self.subject.fetch_events()
+        self.assertEqual(len(m.request_history), 1)
+        self.assertEqual(events, fake_events[:25])
+
+
+    @requests_mock.Mocker()
+    def test_fetch_events_param_setting(self, m):
+        m.get(self.subject.events_url, json=[])
+        self.subject.fetch_events()
+        print m.request_history[0].query
+        params = m.request_history[0].qs
+        self.assertTrue('key' in params)
+        self.assertEqual(params['key'][0], '1234')
+        self.assertTrue('fields' in params)
+        self.assertTrue('self' in params['fields'])
+        self.assertTrue('omit' in params)
+        self.assertItemsEqual(params['omit'], ['waitlist_count',
+            'yes_rsvp_count', 'group', 'manual_attendance_count', 'self.role',
+            'self.rsvp'])
+
+    @mock.patch.object(MeetupClient, 'fetch_events')
+    def test_events_caching(self, mock_fetch_events):
+        mock_fetch_events.return_value = [1]
+        self.assertEqual(self.subject.events, [1])
+        self.assertEqual(self.subject.events, [1])
+        mock_fetch_events.assert_called_once()
+
+    @mock.patch.object(MeetupClient, 'fetch_events')
+    def test_update_events(self, mock_fetch_events):
+        mock_fetch_events.return_value = [1]
+        self.assertEqual(self.subject.events, [1])
+        mock_fetch_events.return_value = [2, 3]
+        self.subject.update_events()
+        self.assertEqual(self.subject.events, [2, 3])
