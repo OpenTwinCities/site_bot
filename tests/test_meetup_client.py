@@ -38,7 +38,6 @@ class MeetupClientTest(SiteBotTestCase):
         self.assertEqual(len(m.request_history), 1)
         self.assertEqual(events, fake_events[:25])
 
-
     @requests_mock.Mocker()
     def test_fetch_events_param_setting(self, m):
         m.get(self.subject.events_url, json=[])
@@ -50,9 +49,10 @@ class MeetupClientTest(SiteBotTestCase):
         self.assertTrue('fields' in params)
         self.assertTrue('self' in params['fields'])
         self.assertTrue('omit' in params)
-        self.assertItemsEqual(params['omit'], ['waitlist_count',
-            'yes_rsvp_count', 'group', 'manual_attendance_count', 'self.role',
-            'self.rsvp'])
+        self.assertItemsEqual(
+            params['omit'],
+            ['waitlist_count', 'yes_rsvp_count', 'group',
+             'manual_attendance_count', 'self.role', 'self.rsvp'])
 
     @mock.patch.object(MeetupClient, 'fetch_events')
     def test_events_caching(self, mock_fetch_events):
