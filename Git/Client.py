@@ -9,12 +9,11 @@ class GitClient:
     GIT_PULL_CMD = ['git', 'pull']
     GIT_PUSH_CMD = ['git', 'push']
 
-    def __init__(self, repo_dir, author_name, author_email, author_key):
+    def __init__(self, repo_dir, author_name, author_email):
         self.repo_dir = repo_dir
         self.author = {
             'name': author_name,
-            'email': author_email,
-            'key': author_key
+            'email': author_email
         }
 
     def __execute__(self, cmd):
@@ -29,8 +28,24 @@ class GitClient:
     def status(self):
         statuses = self.__execute__(self.GIT_STATUS_CMD)
         statuses = statuses.replace('??', 'A')
-        statuses = statuses.split('\n')
-        return {filename: status for (status, filename) in statuses.split()}
+        statuses = [status for status in
+                    [status.split() for status in statuses.split('\n')]
+                    if status]
+        if statuses:
+            print statuses
+            return {path: code for (code, path) in statuses}
+        else:
+            return {}
+
+    @property
+    def new_files(self):
+        return [path for (path, code) in self.status.iteritems()
+                if code == 'A']
+
+    @property
+    def modified_files(self):
+        return [path for (path, code) in self.status.iteritems()
+                if code == 'M']
 
     def stage_all(self):
         return self.__execute__(self.GIT_STAGE_CMD)
