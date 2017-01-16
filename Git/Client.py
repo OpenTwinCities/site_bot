@@ -1,10 +1,14 @@
 # -*- coding: utf8 -*-
+import copy
 from subprocess import Popen, PIPE
 
 
 class GitClient:
     GIT_STATUS_CMD = ['git', 'status', '--porcelain']
     GIT_STAGE_CMD = ['git', 'add', '.']
+    GIT_RESET_HARD_CMD = ['git', 'reset', '--hard', 'HEAD']
+    GIT_REMOVE_HEAD_COMMIT_CMD = ['git', 'reset', '--hard', 'HEAD~1']
+    GIT_CLEAN_CMD = ['git', 'clean', '-df']
     GIT_COMMIT_CMD = ['git', 'commit', '-m']
     GIT_PULL_CMD = ['git', 'pull']
     GIT_PUSH_CMD = ['git', 'push']
@@ -26,6 +30,9 @@ class GitClient:
 
     @property
     def status(self):
+        '''A dict of paths that differ in some what from HEAD. The value
+        associated with each path is a git status code indicated the type of
+        difference.'''
         statuses = self.__execute__(self.GIT_STATUS_CMD)
         statuses = statuses.replace('??', 'A')
         statuses = [status for status in
@@ -39,16 +46,42 @@ class GitClient:
 
     @property
     def new_files(self):
+        '''A list of paths to new files that are not current in HEAD.'''
         return [path for (path, code) in self.status.iteritems()
                 if code == 'A']
 
     @property
     def modified_files(self):
+        '''A list of paths to existing files in HEAD that have been
+        modified.'''
         return [path for (path, code) in self.status.iteritems()
                 if code == 'M']
 
+    @property
+    def message(self):
+        '''Message summarizing what is to be commited.'''
+        return '\n'.join(['Added %s' % path for path in self.new_files] +
+                         ['Updated %s' % path for path in self.modified_files])
+
     def stage_all(self):
         return self.__execute__(self.GIT_STAGE_CMD)
+
+    def commit(self):
+        commit_cmd = copy.deepcopy(self.GIT_COMMIT_CMD)
+        commit_cmd.append(self.message)
+        commit_cmd.append('--author="%s <%s>"' % (self.author['name'],
+                                                  self.author['email']))
+        return self.__execute__(commit_cmd)
+
+    def reset_hard(self):
+        '''Does a hard reset of the repo to HEAD, and a clean'''
+        return '\n'.join([self.__execute__(self.GIT_RESET_HARD_CMD),
+                          self.__execute__(self.GIT_CLEAN_CMD)])
+
+    def remove_head_commit(self):
+        '''Resets the repo to the current HEAD's parent.'''
+        return '\n'.join([self.__execute__(self.GIT_REMOVE_HEAD_COMMIT_CMD),
+                          self.reset_hard()])
 
     def pull(self):
         return self.__execute__(self.GIT_PULL_CMD)

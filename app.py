@@ -7,13 +7,11 @@ from Meetup.Filters import filter_events
 REPO_RELATIVE_PATH = 'opentwincities.github.com/'
 REPO_AUTHOR_NAME = os.environ['SITE_BOT_REPO_AUTHOR_NAME']
 REPO_AUTHOR_EMAIL = os.environ['SITE_BOT_REPO_AUTHOR_EMAIL']
-REPO_AUTHOR_KEY = os.environ['SITE_BOT_REPO_AUTHOR_KEY']
 MEETUP_GROUP_NAME = os.environ['SITE_BOT_MEETUP_GROUP_NAME']
 MEETUP_API_KEY = os.environ['SITE_BOT_MEETUP_API_KEY']
 
 meetup = MeetupClient(MEETUP_API_KEY, MEETUP_GROUP_NAME)
-git = GitClient(REPO_RELATIVE_PATH, REPO_AUTHOR_NAME, REPO_AUTHOR_EMAIL,
-                REPO_AUTHOR_KEY)
+git = GitClient(REPO_RELATIVE_PATH, REPO_AUTHOR_NAME, REPO_AUTHOR_EMAIL)
 
 
 def time_to_search_from():
@@ -27,11 +25,16 @@ def poll_and_update():
     events = filter_events(meetup.events, time_to_search_from())
 
     if events:
+        git.reset_hard()
         git.pull()
 
         # TODO Modify repo
 
-        if git.is_dirty():
+        if git.status:
             git.stage_all()
             git.commit()
-            git.push()
+            try:
+                git.push()
+                # TODO write time to file if successful
+            except:
+                git.remove_head_commit()
