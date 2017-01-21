@@ -2,13 +2,16 @@
 import os
 from Git.Client import GitClient
 from Meetup.Client import MeetupClient
+from Meetup.Event import MeetupEvent
 from Meetup.Filters import filter_events
+from Meetup.Writer import MeetupWriter
 
 REPO_RELATIVE_PATH = 'opentwincities.github.com/'
 REPO_AUTHOR_NAME = os.environ['SITE_BOT_REPO_AUTHOR_NAME']
 REPO_AUTHOR_EMAIL = os.environ['SITE_BOT_REPO_AUTHOR_EMAIL']
 MEETUP_GROUP_NAME = os.environ['SITE_BOT_MEETUP_GROUP_NAME']
 MEETUP_API_KEY = os.environ['SITE_BOT_MEETUP_API_KEY']
+EVENT_POSTS_DIR = os.path.join(REPO_RELATIVE_PATH, 'events', '_posts')
 
 meetup = MeetupClient(MEETUP_API_KEY, MEETUP_GROUP_NAME)
 git = GitClient(REPO_RELATIVE_PATH, REPO_AUTHOR_NAME, REPO_AUTHOR_EMAIL)
@@ -28,7 +31,11 @@ def poll_and_update():
         git.reset_hard()
         git.pull()
 
-        # TODO Modify repo
+        writer = MeetupWriter(EVENT_POSTS_DIR)
+        for event in events:
+            # TODO: Note the first observation of an event in a database, use
+            # that for filenames
+            writer.write(MeetupEvent(event))
 
         if git.status:
             git.stage_all()
