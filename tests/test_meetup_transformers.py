@@ -6,22 +6,22 @@ from datetime import datetime
 
 
 class MeetupTransformersTest(SiteBotTestCase):
-
-    def test_transform_event(self):
-        meetup_event = self.fake_event()
+    def assertTransformation(self, meetup_event):
         meetup_event['description'] = '''
             Hello <a href="http://example.com">World</a>
         '''
         meetup_time = datetime.fromtimestamp(meetup_event['time'])
-        # TODO test with and without address_2
-        meetup_location = ",".join([
-            meetup_event['venue']['address_1'],
-            meetup_event['venue']['address_2'],
-            meetup_event['venue']['city'],
-            meetup_event['venue']['state']
-        ]) + " %" % meetup_event['venue']['zip']
+        meetup_location_fields = [
+            meetup_event['venue'].get('address_1'),
+            meetup_event['venue'].get('address_2'),
+            meetup_event['venue'].get('city'),
+            meetup_event['venue'].get('state')
+        ]
+        meetup_location_fields = [x for x in meetup_location_fields if x is not
+                                  None]
+        meetup_location = (",".join(meetup_location_fields) +
+                           " %s" % meetup_event['venue']['zip'])
 
-        # TODO meetup_event_id should be final path segement of url
         expected_front_matter = [
                 "category: Events",
                 "layout: event",
@@ -39,3 +39,12 @@ class MeetupTransformersTest(SiteBotTestCase):
         self.assertEqual(transformed_event['body'], expected_body)
         self.assertItemsEqual(transformed_event['front_matter'].split('\n'),
                               expected_front_matter)
+
+    def test_transform_event_no_address_2(self):
+        self.maxDiff = None
+        self.assertTransformation(self.fake_event())
+
+    def test_transform_event_with_address_2(self):
+        meetup_event = self.fake_event()
+        meetup_event['venue']['address_2'] = self.fake.secondary_address()
+        self.assertTransformation(meetup_event)
