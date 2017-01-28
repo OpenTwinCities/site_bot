@@ -1,6 +1,5 @@
 # -*- coding: utf8 -*-
 from datetime import datetime
-import html2text
 from ruamel import yaml
 
 
@@ -27,15 +26,13 @@ class MeetupEvent:
                                 event.get('name')),
             'event_date': event['time'],
             'meetup_event_id': event.get('id'),
+            'source_meetup_content': True,
             'venue_name': event['venue'].get('name'),
             'venue_location': venue_location,
             'published': True
         }
         self.__metadata__ = {k: v for (k, v) in event.iteritems()
-                             if k not in self.__frontmatter__
-                             and k != 'description'}
-
-        self.__body__ = html2text.html2text(event['description'])
+                             if k not in self.__frontmatter__}
 
     @property
     def frontmatter(self):
@@ -45,17 +42,12 @@ class MeetupEvent:
     def metadata(self):
         return self.__metadata__
 
-    @property
-    def body(self):
-        return self.__body__
-
     def __unicode__(self):
         return "\n".join([
             '---',
             yaml.dump(self.frontmatter, Dumper=yaml.RoundTripDumper).strip(),
             '---',
-            '',
-            self.body
+            ''
         ])
 
     def __str__(self):

@@ -2,7 +2,6 @@
 from __future__ import absolute_import
 from site_bot_test_helper import SiteBotTestCase
 from Meetup.Event import MeetupEvent
-from datetime import datetime
 
 
 class MeetupEventTest(SiteBotTestCase):
@@ -26,6 +25,7 @@ class MeetupEventTest(SiteBotTestCase):
                                 meetup_event['name']),
             'event_date': meetup_event['time'].strftime('%Y-%m-%d %H:%M:%S'),
             'meetup_event_id': meetup_event['id'],
+            'source_meetup_content': True,
             'venue_name': meetup_event['venue']['name'],
             'venue_location': meetup_location,
             'published': True
@@ -37,16 +37,13 @@ class MeetupEventTest(SiteBotTestCase):
         '''
 
         transformed_event = MeetupEvent(meetup_event)
-        expected_body = 'Hello [World](http://example.com)\n\n'
         expected_frontmatter = self.expected_frontmatter(meetup_event)
 
-        self.assertEqual(transformed_event.body, expected_body)
         self.assertItemsEqual(transformed_event.frontmatter,
                               expected_frontmatter)
         self.assertItemsEqual(transformed_event.metadata,
                               {k: v for (k, v) in meetup_event.iteritems()
-                               if k not in expected_frontmatter
-                               and k != 'description'})
+                               if k not in expected_frontmatter})
 
     def test_init_no_address_2(self):
         self.assertTransformation(self.fake_event())
@@ -71,25 +68,25 @@ class MeetupEventTest(SiteBotTestCase):
             "title: %s" % expected_frontmatter['title'],
             "event_date: %s" % expected_frontmatter['event_date'],
             "meetup_event_id: %s" % expected_frontmatter['meetup_event_id'],
+            "source_meetup_content: true",
             "venue_name: %s" % expected_frontmatter['venue_name'],
             "venue_location: %s" % expected_frontmatter['venue_location'],
             "published: true",
             '---',
             '',
-            'Hello [World](http://example.com)',
-            '',
-            ''
         ]
 
         stringified_event = ("%s" % transformed_event).split("\n")
+        print stringified_event
         self.assertEqual(stringified_event[0], expected_text[0])
         # Frontmatter ordering is not guarrenteeded, and doesn't need to be
-        for x in range(1, 9):
+        for x in range(1, 10):
             locations = [i for i, line in enumerate(stringified_event)
                          if line == expected_text[x]]
-            self.assertEqual(len(locations), 1)
+            self.assertEqual(len(locations), 1,
+                             'Found the wrong number of %s' % expected_text[x])
             self.assertGreaterEqual(locations[0], 1)
-            self.assertLess(locations[0], 9)
+            self.assertLess(locations[0], 10)
 
-        for x in range(9, 12):
+        for x in range(10, 12):
             self.assertEqual(stringified_event[x], expected_text[x])
