@@ -16,6 +16,12 @@ EVENT_POSTS_DIR = os.path.join(REPO_RELATIVE_PATH, 'events', '_posts')
 meetup = MeetupClient(MEETUP_API_KEY, MEETUP_GROUP_NAME)
 git = GitClient(REPO_RELATIVE_PATH, REPO_AUTHOR_NAME, REPO_AUTHOR_EMAIL)
 
+# Remaining TODO
+# - SQLite DB to keep track of which events have been observed
+# - Time noting and fetching as described below
+# - Include event name in file names, not event ID
+# - Figure out event summarys
+
 
 def time_to_search_from():
     # TODO Make this read from a file instead of generating a time
@@ -45,3 +51,7 @@ def poll_and_update():
                 # TODO write time to file if successful
             except:
                 git.remove_head_commit()
+
+
+if __name__ == "__main__":
+    poll_and_update()
