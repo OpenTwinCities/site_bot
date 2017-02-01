@@ -1,5 +1,7 @@
 # -*- coding: utf8 -*-
 import os
+import sys
+sys.path.insert(1, 'app/')
 from Git.Client import GitClient
 from Meetup.Client import MeetupClient
 from Meetup.Event import MeetupEvent

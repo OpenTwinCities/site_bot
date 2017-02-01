@@ -1,12 +1,19 @@
 # -*- coding: utf8 -*-
 from __future__ import absolute_import
+from copy import deepcopy
+from datetime import datetime
 from site_bot_test_helper import SiteBotTestCase
 from Meetup.Event import MeetupEvent
 
 
 class MeetupEventTest(SiteBotTestCase):
 
-    def expected_frontmatter(self, meetup_event):
+    def expected_frontmatter(self, source_event):
+        meetup_event = deepcopy(source_event)
+        for field in ['time', 'created', 'updated']:
+            meetup_event[field] = datetime.fromtimestamp(
+                meetup_event[field] / 1000)
+
         meetup_location_fields = [
             meetup_event['venue'].get('address_1'),
             meetup_event['venue'].get('address_2'),

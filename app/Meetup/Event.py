@@ -1,20 +1,22 @@
 # -*- coding: utf8 -*-
+from copy import deepcopy
 from datetime import datetime
 from ruamel import yaml
 
 
 class MeetupEvent:
 
-    def __init__(self, event):
+    def __init__(self, source_event):
+        event = deepcopy(source_event)
         # All times from Meetup are in milliseconds
         for field in ['time', 'created', 'updated']:
             event[field] = datetime.fromtimestamp(event[field] / 1000)
 
         location_fields = [
-           event['venue'].get('address_1'),
-           event['venue'].get('address_2'),
-           event['venue'].get('city'),
-           event['venue'].get('state')
+            event['venue'].get('address_1'),
+            event['venue'].get('address_2'),
+            event['venue'].get('city'),
+            event['venue'].get('state')
         ]
         location_fields = [x for x in location_fields if x is not None]
         venue_location = (",".join(location_fields) +

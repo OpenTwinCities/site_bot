@@ -2,7 +2,10 @@
 import time
 from faker import Faker
 import random
+import sys
 import unittest
+
+sys.path.insert(1, 'app/')
 
 
 class SiteBotTestCase(unittest.TestCase):
