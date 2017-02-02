@@ -51,7 +51,10 @@ class SiteBotTestCase(unittest.TestCase):
                 'state': self.fake.state_abbr()
             },
             'link': self.fake.uri(),
-            'description': self.fake.paragraphs(),
+            'description': '''
+                <p>Hello <a href="http://example.com">World</a></p>
+                <p>Here is some more content</p>
+                ''',
             'how_to_find_us': self.fake.sentence(10),
             'visibility': random.choice([True, False])
         }

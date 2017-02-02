@@ -24,7 +24,7 @@ class MeetupClient:
     def fetch_events(self):
         """Requests and returns events from Meetup"""
         return requests.get(self.events_url, params=self.query_params({
-            'fields': 'self',
+            'fields': ['self', 'venue.state'],
             'omit': ['waitlist_count', 'yes_rsvp_count', 'group',
                      'manual_attendance_count', 'self.role', 'self.rsvp']
             })).json()

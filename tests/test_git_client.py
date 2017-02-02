@@ -9,10 +9,14 @@ class GitClientTest(SiteBotTestCase):
     def setUp(self):
         super(GitClientTest, self).setUp()
         self.subject = GitClient('foo/', 'A Name', 'address@example.com')
-        self.mock_git_status = "?? path1\n M path/to2\n A path/to/other3"
+        self.mock_git_status = """?? path1
+                               M path/to2
+                               A path/to/other3
+                               R path/to/old -> path/to/new"""
         self.mock_status = {'path1': 'A',
                             'path/to2': 'M',
-                            'path/to/other3': 'A'}
+                            'path/to/other3': 'A',
+                            'path/to/old -> path/to/new': 'R'}
 
     @mock.patch.object(GitClient, '__execute__')
     def test_status(self, mock_execute):
@@ -49,12 +53,25 @@ class GitClientTest(SiteBotTestCase):
         self.assertEqual(self.subject.modified_files, [])
 
     @mock.patch.object(GitClient, 'status', new_callable=mock.PropertyMock)
+    def test_renamed_files(self, mock_status):
+        mock_status.return_value = self.mock_status
+        self.assertEqual(self.subject.renamed_files,
+            ['path/to/old -> path/to/new'])
+
+    @mock.patch.object(GitClient, 'status', new_callable=mock.PropertyMock)
+    def test_empty_renamed_files(self, mock_status):
+        mock_status.return_value = {}
+        self.assertEqual(self.subject.renamed_files, [])
+
+    @mock.patch.object(GitClient, 'status', new_callable=mock.PropertyMock)
     def test_message(self, mock_status):
         mock_status.return_value = self.mock_status
         self.assertIn('Added path1', self.subject.message)
         self.assertIn('Updated path/to2', self.subject.message)
         self.assertIn('Added path/to/other3', self.subject.message)
-        self.assertEqual(3, len(self.subject.message.split('\n')))
+        self.assertIn('Renamed path/to/old -> path/to/new',
+                       self.subject.message)
+        self.assertEqual(4, len(self.subject.message.split('\n')))
 
     @mock.patch.object(GitClient, '__execute__')
     def test_stage_all(self, mock_execute):
@@ -92,9 +109,9 @@ class GitClientTest(SiteBotTestCase):
     @mock.patch.object(GitClient, '__execute__')
     def test_pull(self, mock_execute):
         self.subject.pull()
-        mock_execute.assert_called_once_with(['git', 'pull'])
+        mock_execute.assert_called_once_with(['git', 'pull', '--force'])
 
     @mock.patch.object(GitClient, '__execute__')
     def test_push(self, mock_execute):
         self.subject.push()
-        mock_execute.assert_called_once_with(['git', 'push'])
+        mock_execute.assert_called_once_with(['git', 'push', '--quiet'])

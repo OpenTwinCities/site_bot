@@ -35,14 +35,11 @@ class MeetupEventTest(SiteBotTestCase):
             'source_meetup_content': True,
             'venue_name': meetup_event['venue']['name'],
             'venue_location': meetup_location,
-            'published': True
+            'published': True,
+            'excerpt': '<p>Hello <a href="http://example.com">World</a></p>'
         }
 
     def assertTransformation(self, meetup_event):
-        meetup_event['description'] = '''
-            Hello <a href="http://example.com">World</a>
-        '''
-
         transformed_event = MeetupEvent(meetup_event)
         expected_frontmatter = self.expected_frontmatter(meetup_event)
 
@@ -62,9 +59,6 @@ class MeetupEventTest(SiteBotTestCase):
 
     def test__str__(self):
         meetup_event = self.fake_event()
-        meetup_event['description'] = '''
-            Hello <a href="http://example.com">World</a>
-        '''
 
         transformed_event = MeetupEvent(meetup_event)
         expected_frontmatter = self.expected_frontmatter(meetup_event)
@@ -79,6 +73,7 @@ class MeetupEventTest(SiteBotTestCase):
             "venue_name: %s" % expected_frontmatter['venue_name'],
             "venue_location: %s" % expected_frontmatter['venue_location'],
             "published: true",
+            'excerpt: <p>Hello <a href="http://example.com">World</a></p>',
             '---',
             '',
         ]
@@ -87,13 +82,13 @@ class MeetupEventTest(SiteBotTestCase):
         print stringified_event
         self.assertEqual(stringified_event[0], expected_text[0])
         # Frontmatter ordering is not guarrenteeded, and doesn't need to be
-        for x in range(1, 10):
+        for x in range(1, 11):
             locations = [i for i, line in enumerate(stringified_event)
                          if line == expected_text[x]]
             self.assertEqual(len(locations), 1,
                              'Found the wrong number of %s' % expected_text[x])
             self.assertGreaterEqual(locations[0], 1)
-            self.assertLess(locations[0], 10)
+            self.assertLess(locations[0], 11)
 
-        for x in range(10, 12):
+        for x in range(11, 13):
             self.assertEqual(stringified_event[x], expected_text[x])

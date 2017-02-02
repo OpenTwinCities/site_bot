@@ -10,8 +10,8 @@ class GitClient:
     GIT_REMOVE_HEAD_COMMIT_CMD = ['git', 'reset', '--hard', 'HEAD~1']
     GIT_CLEAN_CMD = ['git', 'clean', '-df']
     GIT_COMMIT_CMD = ['git', 'commit', '-m']
-    GIT_PULL_CMD = ['git', 'pull']
-    GIT_PUSH_CMD = ['git', 'push']
+    GIT_PULL_CMD = ['git', 'pull', '--force']
+    GIT_PUSH_CMD = ['git', 'push', '--quiet']
 
     def __init__(self, repo_dir, author_name, author_email):
         self.repo_dir = repo_dir
@@ -33,13 +33,20 @@ class GitClient:
         '''A dict of paths that differ in some what from HEAD. The value
         associated with each path is a git status code indicated the type of
         difference.'''
+
+        def transform(status):
+            status = status.strip()
+            if status.startswith('R'):
+                return status.split(' ', 1)
+            else:
+                return status.split()
+
         statuses = self.__execute__(self.GIT_STATUS_CMD)
         statuses = statuses.replace('??', 'A')
         statuses = [status for status in
-                    [status.split() for status in statuses.split('\n')]
+                    [transform(status) for status in statuses.split('\n')]
                     if status]
         if statuses:
-            print statuses
             return {path: code for (code, path) in statuses}
         else:
             return {}
@@ -58,10 +65,19 @@ class GitClient:
                 if code == 'M']
 
     @property
+    def renamed_files(self):
+        '''A list of paths to existing files in HEAD that have been
+        renamed/moved.'''
+        return [path for (path, code) in self.status.iteritems()
+                if code == 'R']
+
+    @property
     def message(self):
         '''Message summarizing what is to be commited.'''
         return '\n'.join(['Added %s' % path for path in self.new_files] +
-                         ['Updated %s' % path for path in self.modified_files])
+                         ['Updated %s' % path
+                          for path in self.modified_files] +
+                         ['Renamed %s' % path for path in self.renamed_files])
 
     def stage_all(self):
         return self.__execute__(self.GIT_STAGE_CMD)

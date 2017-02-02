@@ -1,4 +1,5 @@
 # -*- coding: utf8 -*-
+from bs4 import BeautifulSoup
 from copy import deepcopy
 from datetime import datetime
 from ruamel import yaml
@@ -21,6 +22,7 @@ class MeetupEvent:
         location_fields = [x for x in location_fields if x is not None]
         venue_location = (",".join(location_fields) +
                           " %s" % event['venue'].get('zip')).strip()
+        excerpt = unicode(BeautifulSoup(event['description'], 'html.parser').p)
         self.__frontmatter__ = {
             'category': 'Events',
             'layout': 'event',
@@ -31,7 +33,8 @@ class MeetupEvent:
             'source_meetup_content': True,
             'venue_name': event['venue'].get('name'),
             'venue_location': venue_location,
-            'published': True
+            'published': True,
+            'excerpt': excerpt
         }
         self.__metadata__ = {k: v for (k, v) in event.iteritems()
                              if k not in self.__frontmatter__}

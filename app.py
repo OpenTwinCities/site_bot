@@ -1,59 +1,93 @@
 # -*- coding: utf8 -*-
+from datetime import date
 import os
 import sys
+import time
 sys.path.insert(1, 'app/')
 from Git.Client import GitClient
 from Meetup.Client import MeetupClient
 from Meetup.Event import MeetupEvent
 from Meetup.Filters import filter_events
-from Meetup.Writer import MeetupWriter
-
-REPO_RELATIVE_PATH = 'opentwincities.github.com/'
-REPO_AUTHOR_NAME = os.environ['SITE_BOT_REPO_AUTHOR_NAME']
-REPO_AUTHOR_EMAIL = os.environ['SITE_BOT_REPO_AUTHOR_EMAIL']
-MEETUP_GROUP_NAME = os.environ['SITE_BOT_MEETUP_GROUP_NAME']
-MEETUP_API_KEY = os.environ['SITE_BOT_MEETUP_API_KEY']
-EVENT_POSTS_DIR = os.path.join(REPO_RELATIVE_PATH, 'events', '_posts')
-
-meetup = MeetupClient(MEETUP_API_KEY, MEETUP_GROUP_NAME)
-git = GitClient(REPO_RELATIVE_PATH, REPO_AUTHOR_NAME, REPO_AUTHOR_EMAIL)
-
-# Remaining TODO
-# - SQLite DB to keep track of which events have been observed
-# - Time noting and fetching as described below
-# - Include event name in file names, not event ID
-# - Figure out event summarys
+from File.DB import FileDB
+from File.Writer import FileWriter
 
 
-def time_to_search_from():
-    # TODO Make this read from a file instead of generating a time
-    # Returning 1 month ago
-    import time
-    return int(round((time.time() - 2592000) * 1000))
+class App:
+    def __init__(self, CONSTANTS):
+        for name in CONSTANTS:
+            setattr(self, name, CONSTANTS[name])
+        self.meetup = MeetupClient(self.MEETUP_API_KEY, self.MEETUP_GROUP_NAME)
+        self.git = GitClient(self.REPO_PATH, self.REPO_AUTHOR_NAME,
+                             self.REPO_AUTHOR_EMAIL)
+        self.writer = FileWriter(self.EVENT_POSTS_DIR)
+        self.db = FileDB(self.EVENT_POSTS_DIR)
 
+    @property
+    def time_to_search_from(self):
+        # Returning 1 month ago
+        return int(round((time.time() - 2592000) * 1000))
 
-def poll_and_update():
-    events = filter_events(meetup.events, time_to_search_from())
+    def sync_event_file(self, event):
+        renamed = False
+        file_info = self.db.find_event(event['id'])
+        if file_info:
+            if file_info['title'] != event['name']:
+                renamed = True
+                (file_date, title) = FileWriter.split_filename(
+                    file_info['filename'])
+                filename = FileWriter.create_filename(file_date, event['name'])
+            else:
+                filename = file_info['filename']
+        else:
+            filename = FileWriter.create_filename(date.today(), event['name'])
 
-    if events:
-        git.reset_hard()
-        git.pull()
+        if renamed:
+            self.writer.delete(file_info['filename'])
 
-        writer = MeetupWriter(EVENT_POSTS_DIR)
-        for event in events:
-            # TODO: Note the first observation of an event in a database, use
-            # that for filenames
-            writer.write(MeetupEvent(event))
+        self.writer.write(MeetupEvent(event), filename)
 
-        if git.status:
-            git.stage_all()
-            git.commit()
+    def sync_git(self):
+        if self.git.status:
+            self.git.stage_all()
+            self.git.commit()
             try:
-                git.push()
-                # TODO write time to file if successful
-            except:
-                git.remove_head_commit()
+                self.git.push()
+                return True
+            except Exception as e:
+                self.git.remove_head_commit()
+                self.git.pull()
+                raise e
+        else:
+            return False
+
+    def poll_and_update(self):
+        events = filter_events(self.meetup.events, self.time_to_search_from)
+
+        if events:
+            self.git.reset_hard()
+            self.git.pull()
+
+            for event in events:
+                self.sync_event_file(event)
+
+            self.sync_git()
+
+
+def CONSTANTS():
+    CONSTANTS = {
+        'REPO_PATH': os.path.join(os.getcwd(), 'opentwincities.github.com/'),
+        'REPO_AUTHOR_NAME': os.environ['SITE_BOT_REPO_AUTHOR_NAME'],
+        'REPO_AUTHOR_EMAIL': os.environ['SITE_BOT_REPO_AUTHOR_EMAIL'],
+        'MEETUP_GROUP_NAME': os.environ['SITE_BOT_MEETUP_GROUP_NAME'],
+        'MEETUP_API_KEY': os.environ['SITE_BOT_MEETUP_API_KEY']
+    }
+
+    CONSTANTS['EVENT_POSTS_DIR'] = os.path.join(
+        CONSTANTS['REPO_PATH'], 'events', '_posts')
+
+    return CONSTANTS
 
 
 if __name__ == "__main__":
-    poll_and_update()
+    app = App(CONSTANTS())
+    app.poll_and_update()
