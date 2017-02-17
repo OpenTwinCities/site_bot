@@ -11,7 +11,8 @@ class MeetupEvent:
         event = deepcopy(source_event)
         # All times from Meetup are in milliseconds
         for field in ['time', 'created', 'updated']:
-            event[field] = datetime.fromtimestamp(event[field] / 1000)
+            event[field] = datetime.utcfromtimestamp(
+                (event[field] + event['utc_offset']) / 1000)
 
         location_fields = [
             event['venue'].get('address_1'),

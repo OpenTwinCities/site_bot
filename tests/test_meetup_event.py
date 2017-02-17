@@ -11,8 +11,8 @@ class MeetupEventTest(SiteBotTestCase):
     def expected_frontmatter(self, source_event):
         meetup_event = deepcopy(source_event)
         for field in ['time', 'created', 'updated']:
-            meetup_event[field] = datetime.fromtimestamp(
-                meetup_event[field] / 1000)
+            meetup_event[field] = datetime.utcfromtimestamp(
+                (meetup_event[field] + meetup_event['utc_offset']) / 1000)
 
         meetup_location_fields = [
             meetup_event['venue'].get('address_1'),
