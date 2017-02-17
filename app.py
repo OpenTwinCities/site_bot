@@ -27,6 +27,11 @@ class App:
         # Returning 1 month ago
         return int(round((time.time() - 2592000) * 1000))
 
+    @property
+    def time_to_search_to(self):
+        # Returning 1 month from now
+        return int(round((time.time() + 2592000) * 1000))
+
     def sync_event_file(self, event):
         renamed = False
         file_info = self.db.find_event(event['id'])
@@ -61,7 +66,8 @@ class App:
             return False
 
     def poll_and_update(self):
-        events = filter_events(self.meetup.events, self.time_to_search_from)
+        events = filter_events(self.meetup.events, self.time_to_search_from,
+                               self.time_to_search_to)
 
         if events:
             self.git.reset_hard()
