@@ -5,13 +5,23 @@ Open Twin Cities Site Bot
 
 A bot that automatically adds and updates content on <http://www.opentwincities.org>.
 
-# Setup 
+# Setup
 
 ## Dependencies
 
-- python
+- python 2.x
 - [virtualenv](https://virtualenv.readthedocs.org/en/latest/)
 - [virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/)
+
+### Details for usage with pyenv
+Assuming [pyenv](https://github.com/pyenv/pyenv) is installed and initialized.
+
+```bash
+pip install virtualenv
+pip install virtualenvwrapper
+brew install pyenv-virtualwrapper
+pyenv virtualenvwrapper
+```
 
 ## Environment Variables
 
@@ -19,7 +29,7 @@ The following environment variables must be set:
 
 - `SITE_BOT_REPO_AUTHOR_NAME`: Name to be included for the commit author
 - `SITE_BOT_REPO_AUTHOR_EMAIL`: Email Address to be used for the commit author
-- `SITE_BOT_MEETUP_GROUP_NAME`: Name of the group to get events from 
+- `SITE_BOT_MEETUP_GROUP_NAME`: Name of the group to get events from
 - `SITE_BOT_MEETUP_API_KEY`: API key from Meetup
 
 ## opentincities.github.com repo
