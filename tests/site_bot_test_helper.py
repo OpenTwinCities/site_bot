@@ -13,6 +13,16 @@ class SiteBotTestCase(unittest.TestCase):
         self.fake = Faker()
 
     def fake_event(self):
+        return {
+            'id': self.fake.random_number(),
+            'title': self.fake.sentence(4),
+            'time': self.fake.date_time_this_year(True, True),
+            'excerpt': self.fake.sentence(4),
+            'venue_name': self.fake.company(),
+            'venue_location': self.fake.street_address()
+        }
+
+    def fake_event_old(self):
         # All times come from Meetup in milliseconds
         return {
             'created': 1000 * time.mktime(
