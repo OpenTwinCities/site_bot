@@ -40,8 +40,16 @@ class MeetupJSON:
 
         event['excerpt'] = unicode(BeautifulSoup(e.get('descr'), 'html.parser').p)
 
-        event['venue_name'] = None
-        event['venue_location'] = None
+        event['venue_name'] = e.get('venue_name')
+
+        location_fields = [
+            e.get('venue_address1'),
+            e.get('venue_address2'),
+            e.get('venue_city'),
+            e.get('venue_state')
+        ]
+        event['venue_location'] = (",".join(filter(None, location_fields)) +
+                          " %s" % e.get('venue_zip')).strip()
 
         return event
 
