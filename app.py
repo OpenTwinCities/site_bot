@@ -36,7 +36,7 @@ class App:
             else:
                 filename = file_info['filename']
         else:
-            filename = FileWriter.create_filename(date.today(), event['title'])
+            filename = FileWriter.create_filename(event['time'], event['title'])
 
         if renamed:
             self.writer.delete(file_info['filename'])
