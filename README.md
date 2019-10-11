@@ -5,6 +5,8 @@ Open Twin Cities Site Bot
 
 A bot that automatically adds and updates content on <http://www.opentwincities.org>.
 
+OTCSB uses the Meetup.com RSS feed to get events, then uses a local copy of the OTC GitHub Pages repository to commit those events to the repo.
+
 # Setup
 
 ## Dependencies
@@ -34,11 +36,10 @@ The following environment variables must be set:
 
 ## opentincities.github.com repo
 
-The [opentwincities.github.com repo](https://github.com/OpenTwinCities/opentwincities.github.com)
-must be in a subfolder named `opentwincities.github.com`.
+Events appear on [opentwincities.org](https://www.opentwincities.com) by committing to the [opentwincities.github.com repo](https://github.com/OpenTwinCities/opentwincities.github.com). This repo must be in a subfolder named `opentwincities.github.com`.
 
-You'll probably want to author and push commits as a user other than your
-default git/GitHub user. SSH config can be used to enable this. See
+You'll probably want to author and push commits to the [opentwincities.github.com repo] as a user other than your
+personal git/GitHub user. SSH config can be used to enable this. See
 <http://stackoverflow.com/questions/7927750/specify-an-ssh-key-for-git-push-for-a-given-domain>
 
 ## Dev Environment
