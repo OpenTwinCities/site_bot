@@ -1,7 +1,9 @@
 appdirs==1.4.0
 beautifulsoup4==4.5.3
 Faker==0.7.7
+feedparser==5.2.1
 funcsigs==1.0.2
+icalendar==4.0.3
 inflection==0.3.1
 ipaddress==1.0.18
 mock==2.0.0

@@ -32,16 +32,16 @@ class AppTest(SiteBotTestCase):
         event = self.fake_event()
         mock_created = datetime.date.today() - datetime.timedelta(days=7)
         mock_filename = FileWriter.create_filename(mock_created,
-                                                   event['name'])
+                                                   event['title'])
         mock_file_info = {
-            'title': event['name'],
+            'title': event['title'],
             'filename': mock_filename
         }
         prep_writer = FileWriter(self.test_posts_dir)
         prep_writer.write(MeetupEvent(event), mock_filename)
 
         # Modify event content that will become excerpt
-        event['description'] = "<p>This is new</p>" + event['description']
+        event['excerpt'] = "<p>This is new</p>" + event['excerpt']
         expected_transformed_event = MeetupEvent(event)
 
         # Verify that
@@ -63,19 +63,19 @@ class AppTest(SiteBotTestCase):
         event = self.fake_event()
         mock_created = datetime.date.today() - datetime.timedelta(days=7)
         mock_old_filename = FileWriter.create_filename(mock_created,
-                                                       event['name'])
+                                                       event['title'])
         mock_file_info = {
-            'title': event['name'],
+            'title': event['title'],
             'filename': mock_old_filename
         }
         prep_writer = FileWriter(self.test_posts_dir)
         prep_writer.write(MeetupEvent(event), mock_old_filename)
 
         # Modify event name
-        event['name'] = 'A new name'
+        event['title'] = 'A new name'
         expected_transformed_event = MeetupEvent(event)
         mock_new_filename = FileWriter.create_filename(mock_created,
-                                                       event['name'])
+                                                       event['title'])
 
         # Verify that
         # 1. writer.delete is called to delete to old file

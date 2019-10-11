@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0"><channel>
+<title><![CDATA[Events - Test Group]]></title>
+<link><![CDATA[http://www.meetup.com/testgroup/events/]]></link>
+<description><![CDATA[Events - Test Group]]></description>
+<copyright>Copyright 2002-2014 Meetup, Inc.</copyright>
+<lastBuildDate>Thu, 26 Sep 2019 17:54:14 EDT</lastBuildDate>
+<managingEditor>support@meetup.com (Meetup)</managingEditor>
+<item>
+<title><![CDATA[Title 1]]></title>
+<guid isPermaLink="true">https://www.meetup.com/OpenTwinCities/events/abcdefg/</guid>
+<description><![CDATA[<p><img style="float:left; margin-right:4px" src="" alt="photo" class="photo" />Title 1</p> <p><p>Description goes here</p></p> ]]></description>
+<pubDate>Fri, 05 Jul 2019 12:20:36 EDT</pubDate>
+</item>
+<item>
+<title><![CDATA[Title 2]]></title>
+<guid isPermaLink="true">https://www.meetup.com/OpenTwinCities/events/123456/</guid>
+<description><![CDATA[<p><img style="float:left; margin-right:4px" src="" alt="photo" class="photo" />Title 2</p> <p><p>Description goes here</p></p> ]]></description>
+<pubDate>Sat, 24 Aug 2019 17:32:49 EDT</pubDate>
+</item>
+</channel></rss>

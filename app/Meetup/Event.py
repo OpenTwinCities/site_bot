@@ -1,42 +1,22 @@
 # -*- coding: utf8 -*-
-from bs4 import BeautifulSoup
-from copy import deepcopy
-from datetime import datetime
 from ruamel import yaml
 
 
 class MeetupEvent:
-
-    def __init__(self, source_event):
-        event = deepcopy(source_event)
-        # All times from Meetup are in milliseconds
-        for field in ['time', 'created', 'updated']:
-            event[field] = datetime.utcfromtimestamp(
-                (event[field] + event['utc_offset']) / 1000)
-
-        location_fields = [
-            event['venue'].get('address_1'),
-            event['venue'].get('address_2'),
-            event['venue'].get('city'),
-            event['venue'].get('state')
-        ]
-        location_fields = [x for x in location_fields if x is not None]
-        venue_location = (",".join(location_fields) +
-                          " %s" % event['venue'].get('zip')).strip()
-        excerpt = unicode(BeautifulSoup(event['description'], 'html.parser').p)
+    def __init__(self, event):
         self.__frontmatter__ = {
             'category': 'Events',
             'layout': 'event',
-            'title': "%s %s" % (event['time'].strftime('%B %d'),
-                                event.get('name')),
-            'event_date': event['time'],
-            'meetup_event_id': event.get('id'),
+            'title': "%s %s" % (event['time'].strftime('%B %d'), event['title']),
+            'event_date': "%s" % event['time'],
+            'meetup_event_id': event['id'],
             'source_meetup_content': True,
-            'venue_name': event['venue'].get('name'),
-            'venue_location': venue_location,
+            'venue_name': event['venue_name'],
+            'venue_location': event['venue_location'],
             'published': True,
-            'excerpt': excerpt
+            'excerpt': event['excerpt']
         }
+
         self.__metadata__ = {k: v for (k, v) in event.iteritems()
                              if k not in self.__frontmatter__}
 
