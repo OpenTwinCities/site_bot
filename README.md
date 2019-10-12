@@ -48,6 +48,7 @@ git clone git@github.com:OpenTwinCities/site_bot.git
 cd site_bot
 mkvirtualenv site_bot
 workon site_bot
+pip uninstall -y -r <(pip freeze)  # Uninstall any packages that exist in the virtualenv
 pip install -r requirements.txt
 ```
 
@@ -56,3 +57,22 @@ pip install -r requirements.txt
 ```
 nosetests
 ```
+
+# Deployment
+
+```
+pip uninstall -y -r <(pip freeze)  # Uninstall any packages that exist in the virtualenv
+pip install -r deployment-requirements.txt
+fab deploy \
+  -H USERNAME@HOST:PORT \
+  -i PATH_TO_PRIVATE_KEY
+```
+
+Note: The `site_bot` repo must already be cloned on the host that is being deployed to and located in `/opt/site_bot`.
+The user whose authentication is being used by `fabric` must also have read and write permission on `/opt/site_bot`.
+
+# Deployed Environments
+
+Site bot is currently deployed on an EC2 instance in Open Twin Cities' AWS account. The public domain name of that
+instance is `ec2-52-6-202-131.compute-1.amazonaws.com`. Site bot is schedule to run once an hour via `cron`. This cron
+configuration also sets the [Environment Variables](#environment-variables) for the script.
