@@ -63,9 +63,10 @@ nosetests
 ```
 pip uninstall -y -r <(pip freeze)  # Uninstall any packages that exist in the virtualenv
 pip install -r deployment-requirements.txt
-fab deploy \
+fab \
   -H USERNAME@HOST:PORT \
-  -i PATH_TO_PRIVATE_KEY
+  -i PATH_TO_PRIVATE_KEY \
+  deploy --ref BRANCH_OR_TAG_TO_DEPLOY
 ```
 
 Note: The `site_bot` repo must already be cloned on the host that is being deployed to and located in `/opt/site_bot`.
