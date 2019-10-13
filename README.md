@@ -21,7 +21,7 @@ Assuming [pyenv](https://github.com/pyenv/pyenv) is installed and initialized.
 ```bash
 pip install virtualenv
 pip install virtualenvwrapper
-brew install pyenv-virtualwrapper
+brew install pyenv-virtualenvwrapper
 pyenv virtualenvwrapper
 ```
 
@@ -43,7 +43,12 @@ personal git/GitHub user. SSH config can be used to enable this. See
 <http://stackoverflow.com/questions/7927750/specify-an-ssh-key-for-git-push-for-a-given-domain>
 
 ## Dev Environment
+If you have the opentwincities.github.com repo locally, you can create a symbolic link to it. This example assumes your opentwincities.github.com and site_bot repos are in the same directory:
+```bash
+ln -s ../opentwincities.github.com opentwincities.github.com
+```
 
+To prepare you project for a local run execute
 ```bash
 git clone git@github.com:OpenTwinCities/site_bot.git
 cd site_bot
@@ -53,11 +58,12 @@ pip uninstall -y -r <(pip freeze)  # Uninstall any packages that exist in the vi
 pip install -r requirements.txt
 ```
 
-# Tests
+## Running the tests
 
 ```bash
 nosetests
 ```
+
 
 # Tag & Deploy
 
@@ -97,3 +103,8 @@ Note: The `site_bot` repo must already be cloned on the host that is being deplo
 `/opt/site_bot`. The `opentwincities.github.com` must also already be cloned in
 `/opt/site_bot/opentwincities.github.com` The user whose authentication is being used by `fabric`
 must also have read and write permission on `/opt/site_bot`.
+
+# Run the application
+```bash
+python app.py
+```
