@@ -1,5 +1,5 @@
-# Site bot's current host is running on Trusty
-dist: trusty
+# Site bot's current host is running on Ubuntu Bionic (18.04)
+dist: bionic
 language: python
 python:
 - '2.7'
