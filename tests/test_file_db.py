@@ -42,7 +42,7 @@ foo: bar
 
     def test_find_event(self):
         for i in range(10):
-            self.assertItemsEqual(self.subject.find_event(i),
+            self.assertEqual(self.subject.find_event(i),
                                   {'title': 'Some Event',
                                    'filename': '%s.md' % i})
 

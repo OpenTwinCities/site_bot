@@ -43,7 +43,7 @@ class MeetupRSS:
         event['excerpt'] = None
         for tag in html.find_all('p'):
             for p in tag.find_all('p'):
-                event['excerpt'] = unicode(p)
+                event['excerpt'] = str(p)
                 break
 
         event['venue_name'] = None

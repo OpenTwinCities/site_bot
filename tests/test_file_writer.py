@@ -33,7 +33,7 @@ class FileWriterTest(SiteBotTestCase):
         shutil.rmtree(self.test_dir)
 
     def test_create_filename(self):
-        file_date = date(2017, 01, 20)
+        file_date = date(2017, 1, 20)
         file_title = 'A Test'
         self.assertEqual(FileWriter.create_filename(file_date, file_title),
                          '2017-01-20-a-test.md')
@@ -41,7 +41,7 @@ class FileWriterTest(SiteBotTestCase):
     def test_split_filename(self):
         self.assertEqual(
             FileWriter.split_filename('2017-01-30-another-event.md'),
-            (date(2017, 01, 30), 'another-event'))
+            (date(2017, 1, 30), 'another-event'))
 
     def test_base_path(self):
         self.assertEqual(self.subject.base_path, self.test_dir)

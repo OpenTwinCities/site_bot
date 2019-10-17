@@ -1,5 +1,5 @@
 # -*- coding: utf8 -*-
-from ruamel import yaml
+import yaml
 
 
 class MeetupEvent:
@@ -17,7 +17,7 @@ class MeetupEvent:
             'excerpt': event['excerpt']
         }
 
-        self.__metadata__ = {k: v for (k, v) in event.iteritems()
+        self.__metadata__ = {k: v for (k, v) in event.items()
                              if k not in self.__frontmatter__}
 
     @property
@@ -28,13 +28,13 @@ class MeetupEvent:
     def metadata(self):
         return self.__metadata__
 
-    def __unicode__(self):
+    def unicode(self):
         return "\n".join([
             '---',
-            yaml.dump(self.frontmatter, Dumper=yaml.RoundTripDumper).strip(),
+            yaml.dump(self.frontmatter).strip(),
             '---',
             ''
         ])
 
     def __str__(self):
-        return unicode(self).encode('utf-8')
+        return self.unicode()

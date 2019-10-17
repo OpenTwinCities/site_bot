@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 import re
 import os
-import ruamel.yaml
+import yaml
 
 
 class FileDB:
@@ -27,7 +27,7 @@ class FileDB:
                 text = f.read()
                 _, fm, _ = self.FM_BOUNDARY.split(text, 2)
 
-            metadata = ruamel.yaml.load(fm, ruamel.yaml.RoundTripLoader)
+            metadata = yaml.load(fm, Loader=yaml.FullLoader)
             if 'meetup_event_id' in metadata:
                 self.__index__[metadata['meetup_event_id']] = {
                     'title': metadata['title'],

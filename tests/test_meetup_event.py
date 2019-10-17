@@ -28,10 +28,10 @@ class MeetupEventTest(SiteBotTestCase):
         transformed_event = MeetupEvent(meetup_event)
         expected_frontmatter = self.expected_frontmatter(meetup_event)
 
-        self.assertItemsEqual(transformed_event.frontmatter,
+        self.assertCountEqual(transformed_event.frontmatter,
                               expected_frontmatter)
-        self.assertItemsEqual(transformed_event.metadata,
-                              {k: v for (k, v) in meetup_event.iteritems()
+        self.assertCountEqual(transformed_event.metadata,
+                              {k: v for (k, v) in meetup_event.items()
                                if k not in expected_frontmatter})
     def test__str__(self):
         meetup_event = self.fake_event()
@@ -56,7 +56,7 @@ class MeetupEventTest(SiteBotTestCase):
         ]
 
         stringified_event = ("%s" % transformed_event).split("\n")
-        print stringified_event
+        print(stringified_event)
         self.assertEqual(stringified_event[0], expected_text[0])
         # Frontmatter ordering is not guarrenteeded, and doesn't need to be
         for x in range(1, 11):
@@ -70,4 +70,3 @@ class MeetupEventTest(SiteBotTestCase):
 
         for x in range(11, 13):
             self.assertEqual(stringified_event[x], expected_text[x])
-

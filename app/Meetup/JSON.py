@@ -38,7 +38,7 @@ class MeetupJSON:
         time = e.get('local_time')[:-4]
         event['time'] = datetime.strptime(time, '%Y-%m-%d %H:%M:%S')
 
-        event['excerpt'] = unicode(BeautifulSoup(e.get('descr'), 'html.parser').p)
+        event['excerpt'] = str(BeautifulSoup(e.get('descr'), 'html.parser').p)
 
         event['venue_name'] = e.get('venue_name')
 
