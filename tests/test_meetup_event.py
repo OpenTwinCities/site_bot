@@ -34,7 +34,7 @@ class MeetupEventTest(SiteBotTestCase):
                               {k: v for (k, v) in meetup_event.items()
                                if k not in expected_frontmatter})
     def test__str__(self):
-        meetup_event = self.fake_event()
+        meetup_event = self.fake_event_parsed()
 
         transformed_event = MeetupEvent(meetup_event)
         expected_frontmatter = self.expected_frontmatter(meetup_event)

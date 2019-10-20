@@ -29,7 +29,7 @@ class AppTest(SiteBotTestCase):
     def test_sync_event_file_excerpt_update(self):
         # Build an event and establish that it has already been observed and
         # written
-        event = self.fake_event()
+        event = self.fake_event_parsed()
         mock_created = datetime.date.today() - datetime.timedelta(days=7)
         mock_filename = FileWriter.create_filename(mock_created,
                                                    event['title'])
@@ -60,7 +60,7 @@ class AppTest(SiteBotTestCase):
     def test_sync_event_file_changed_name(self):
         # Build an event and establish that it has already been observed and
         # written
-        event = self.fake_event()
+        event = self.fake_event_parsed()
         mock_created = datetime.date.today() - datetime.timedelta(days=7)
         mock_old_filename = FileWriter.create_filename(mock_created,
                                                        event['title'])
