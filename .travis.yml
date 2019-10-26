@@ -7,10 +7,6 @@ python:
 env:
 - DEPLOY_USER=site_bot HOST=ec2-52-6-202-131.compute-1.amazonaws.com PORT=22
 
-# Decryptes the deployment SSH key for CI
-before_install:
-- openssl aes-256-cbc -K $encrypted_c55a25340a67_key -iv $encrypted_c55a25340a67_iv
-  -in deploy_key.enc -out ./deploy_key -d
 
 jobs:
   include:
@@ -19,6 +15,9 @@ jobs:
     script: nosetests
   - stage: deploy
     install: pip install -r deployment-requirements.txt
+    # Decryptes the deployment SSH key for CI
+    before_script:
+    - openssl aes-256-cbc -K $encrypted_c55a25340a67_key -iv $encrypted_c55a25340a67_iv -in deploy_key.enc -out ./deploy_key -d
     script: fab -H $DEPLOY_USER@$HOST:$SSH_PORT -i ./deploy_key deploy $TRAVIS_TAG
 
 stages:
