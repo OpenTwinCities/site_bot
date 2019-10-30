@@ -1,13 +1,11 @@
 # -*- coding: utf8 -*-
-from datetime import date
 import os
 import sys
-import time
 sys.path.insert(1, 'app/')
+from datetime import datetime, timedelta
 from Git.Client import GitClient
-from Meetup.Calendar import MeetupCalendar
-from Meetup.JSON import MeetupJSON
-from Meetup.RSS import MeetupRSS
+from Meetup.Client import MeetupClient
+from Meetup.Filter import filter_event
 from Meetup.Event import MeetupEvent
 from File.DB import FileDB
 from File.Writer import FileWriter
@@ -17,15 +15,19 @@ class App:
     def __init__(self, CONSTANTS):
         for name in CONSTANTS:
             setattr(self, name, CONSTANTS[name])
-        self.meetup = MeetupRSS(self.MEETUP_GROUP_NAME)
+        self.meetup = MeetupClient(self.MEETUP_GROUP_NAME)
         self.git = GitClient(self.REPO_PATH, self.REPO_AUTHOR_NAME,
                              self.REPO_AUTHOR_EMAIL)
         self.writer = FileWriter(self.EVENT_POSTS_DIR)
         self.db = FileDB(self.EVENT_POSTS_DIR)
 
+    @property
+    def time_to_search_to(self):
+        # Returning 1 month from now
+        return datetime.now() + timedelta(days=30)
+
     def sync_event_file(self, event):
         renamed = False
-
         file_info = self.db.find_event(event['id'])
         if file_info:
             if file_info['title'] != event['title']:
@@ -66,7 +68,8 @@ class App:
 
             for event in events:
                 event = self.meetup.parse_event(event)
-                self.sync_event_file(event)
+                if filter_event(event, self.time_to_search_to):
+                    self.sync_event_file(event)
 
             self.sync_git()
 

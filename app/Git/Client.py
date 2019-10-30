@@ -26,7 +26,7 @@ class GitClient:
         if error:
             raise Exception(error)
 
-        return stdout
+        return stdout.decode()
 
     @property
     def status(self):
@@ -54,21 +54,21 @@ class GitClient:
     @property
     def new_files(self):
         '''A list of paths to new files that are not current in HEAD.'''
-        return [path for (path, code) in self.status.iteritems()
+        return [path for (path, code) in self.status.items()
                 if code == 'A']
 
     @property
     def modified_files(self):
         '''A list of paths to existing files in HEAD that have been
         modified.'''
-        return [path for (path, code) in self.status.iteritems()
+        return [path for (path, code) in self.status.items()
                 if code == 'M']
 
     @property
     def renamed_files(self):
         '''A list of paths to existing files in HEAD that have been
         renamed/moved.'''
-        return [path for (path, code) in self.status.iteritems()
+        return [path for (path, code) in self.status.items()
                 if code == 'R']
 
     @property

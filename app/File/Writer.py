@@ -14,7 +14,7 @@ class FileWriter:
         :returns: The appropriate filename as a string
         """
         return '%s-%s.md' % (
-            date.strftime('%Y-%m-%d'), parameterize(unicode(title)))
+            date.strftime('%Y-%m-%d'), parameterize(str(title)))
 
     @classmethod
     def split_filename(cls, filename):
