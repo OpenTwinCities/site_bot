@@ -11,7 +11,7 @@ OTCSB uses the Meetup.com RSS feed to get events, then uses a local copy of the 
 
 ## Dependencies
 
-- python 2.x
+- python 3.x
 - [virtualenv](https://virtualenv.readthedocs.org/en/latest/)
 - [virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/)
 
