@@ -12,11 +12,11 @@ def deploy(c, ref):
         git fetch origin
         git checkout %(ref)s
         # Delete existing dependencies
-        pip freeze --user > %(existing_packages_tmp_file)s
-        pip uninstall -y -r %(existing_packages_tmp_file)s
+        pip3 freeze --user > %(existing_packages_tmp_file)s
+        pip3 uninstall -y -r %(existing_packages_tmp_file)s
         rm %(existing_packages_tmp_file)s
         # Install dependencies
-        pip install --user -r requirements.txt
+        pip3 install --user -r requirements.txt
     """ % {"deploy_folder": deploy_folder,
            "ref": ref,
            "existing_packages_tmp_file": existing_packages_tmp_file})
