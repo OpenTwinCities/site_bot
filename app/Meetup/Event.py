@@ -8,7 +8,7 @@ class MeetupEvent:
             'category': 'Events',
             'layout': 'event',
             'title': "%s %s" % (event['time'].strftime('%B %d'), event['title']),
-            'event_date': "%s" % event['time'],
+            'event_date': event['time'],
             'meetup_event_id': event['id'],
             'source_meetup_content': True,
             'venue_name': event['venue_name'],

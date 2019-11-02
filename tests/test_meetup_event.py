@@ -44,7 +44,7 @@ class MeetupEventTest(SiteBotTestCase):
             "category: Events",
             "layout: event",
             "title: %s" % expected_frontmatter['title'],
-            "event_date: '%s'" % expected_frontmatter['event_date'],
+            "event_date: %s" % expected_frontmatter['event_date'],
             "meetup_event_id: %s" % expected_frontmatter['meetup_event_id'],
             "source_meetup_content: true",
             "venue_name: %s" % expected_frontmatter['venue_name'],
