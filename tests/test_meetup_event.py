@@ -14,7 +14,7 @@ class MeetupEventTest(SiteBotTestCase):
         return {
             'category': 'Events',
             'layout': 'event',
-            'title': "%s %s" % (meetup_event['time'].strftime('%B %d'), meetup_event['title']),
+            'title': "%s" % (meetup_event['title']),
             'event_date': "%s" % meetup_event['time'],
             'meetup_event_id': meetup_event['id'],
             'source_meetup_content': True,
@@ -62,7 +62,7 @@ class MeetupEventTest(SiteBotTestCase):
         for x in range(1, 11):
             locations = [i for i, line in enumerate(stringified_event)
                          if line == expected_text[x]]
-            
+
             self.assertEqual(len(locations), 1,
                              'Found the wrong number of %s' % expected_text[x])
             self.assertGreaterEqual(locations[0], 1)

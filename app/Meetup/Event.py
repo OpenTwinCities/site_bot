@@ -7,7 +7,7 @@ class MeetupEvent:
         self.__frontmatter__ = {
             'category': 'Events',
             'layout': 'event',
-            'title': "%s %s" % (event['time'].strftime('%B %d'), event['title']),
+            'title': event['title'],
             'event_date': event['time'],
             'meetup_event_id': event['id'],
             'source_meetup_content': True,
