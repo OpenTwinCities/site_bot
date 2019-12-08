@@ -3,9 +3,9 @@
 Open Twin Cities Site Bot
 =========================
 
-A bot that automatically adds and updates content on <http://www.opentwincities.org>.
+A bot that automatically adds and updates content on <http://www.opentwincities.org> from https://api.meetup.com/OpenTwinCities/events.
 
-OTCSB uses the Meetup.com RSS feed to get events, then uses a local copy of the OTC GitHub Pages repository to commit those events to the repo.
+OTCSB uses the Meetup.com API to get events, then uses a local copy of the OTC GitHub Pages repository to commit those events to the repo.
 
 # Setup
 
