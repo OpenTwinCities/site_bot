@@ -115,7 +115,7 @@ sudo apt install python3
 sudo apt install python3-pip
 sudo apt install python3-venv
 
-python -m venv site_bot
+python3 -m venv site_bot
 source site_bot/bin/activate
 python3 app.py
 ```
