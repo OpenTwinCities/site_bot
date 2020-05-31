@@ -53,7 +53,7 @@ class MeetupClient:
                           " %s" % event['venue'].get('zip')).strip()
         event['excerpt'] = str(BeautifulSoup(event['description'], 'html.parser').p)
 
-        event['title'] = "%s %s" % (event['time'].strftime('%B %d'), event.get('name'))
+        event['title'] = event.get('name')
         event['event_date'] = event['time']
         event['meetup_event_id'] = event.get('id')
         event['venue_name'] = event['venue'].get('name')

@@ -117,5 +117,6 @@ sudo apt install python3-venv
 
 python3 -m venv site_bot
 source site_bot/bin/activate
+pip3 install -r requirements.txt
 python3 app.py
 ```
